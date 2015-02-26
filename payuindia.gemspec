@@ -10,12 +10,12 @@ Gem::Specification.new do |spec|
   spec.email         = ["sandeep.kumar@payu.in"]
 
   if spec.respond_to?(:metadata)
-    spec.metadata['allowed_push_host'] = "TODO: Set to 'http://mygemserver.com' to prevent pushes to rubygems.org, or delete to allow pushes to any server."
+    spec.metadata['allowed_push_host'] = "http://rubygems.org"
   end
 
   spec.summary       = %q{Gem for Ruby on Rails Apps.}
-  spec.description   = %q{}
-  spec.homepage      = "TODO: Put your gem's website or public repo URL here."
+  spec.description   = %q{Gem for Ruby on Rails Apps which integrate with PayU India Payment Gateway}
+  spec.homepage      = "https://github.com/payu-india/payuindia"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
