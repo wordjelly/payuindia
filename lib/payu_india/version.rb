@@ -1,3 +1,3 @@
-module Payuindia
+module PayuIndia
   VERSION = "0.1.0"
 end

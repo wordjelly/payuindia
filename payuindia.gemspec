@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'payuindia/version'
+require 'payu_india/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "payuindia"
-  spec.version       = Payuindia::VERSION
+  spec.version       = PayuIndia::VERSION
   spec.authors       = ["Sandeep Kumar"]
   spec.email         = ["sandeep.kumar@payu.in"]
 
