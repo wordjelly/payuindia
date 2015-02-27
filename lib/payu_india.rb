@@ -3,7 +3,6 @@ require "payu_india/version"
 module PayuIndia
   mattr_accessor :test_url
   mattr_accessor :production_url
-  mattr_accessor :secret_key
 
   self.test_url = 'https://test.payu.in/_payment.php'
   self.production_url = 'https://secure.payu.in/_payment.php'
@@ -29,58 +28,21 @@ module PayuIndia
     CHECKSUM_FIELDS = [ 'txnid', 'amount', 'productinfo', 'firstname', 'email', 'udf1', 'udf2', 'udf3', 'udf4',
                         'udf5', 'udf6', 'udf7', 'udf8', 'udf9', 'udf10']
 
-    # mapping :amount, 'amount'
-    # mapping :account, 'key'
-    # mapping :order, 'txnid'
-    # mapping :description, 'productinfo'
-
-    # mapping :customer, :first_name => 'firstname',
-    #   :last_name  => 'lastname',
-    #   :email => 'email',
-    #   :phone => 'phone'
-
-    # mapping :billing_address, :city => 'city',
-    #   :address1 => 'address1',
-    #   :address2 => 'address2',
-    #   :state => 'state',
-    #   :zip => 'zip',
-    #   :country => 'country'
-
-    # # Which tab you want to be open default on PayU
-    # # CC (CreditCard) or NB (NetBanking)
-    # mapping :mode, 'pg'
-
-    # mapping :notify_url, 'notify_url'
-    # mapping :return_url, ['surl', 'furl']
-    # mapping :cancel_return_url, 'curl'
-    # mapping :checksum, 'hash'
-
-    # mapping :user_defined, { :var1 => 'udf1',
-    #   :var2 => 'udf2',
-    #   :var3 => 'udf3',
-    #   :var4 => 'udf4',
-    #   :var5 => 'udf5',
-    #   :var6 => 'udf6',
-    #   :var7 => 'udf7',
-    #   :var8 => 'udf8',
-    #   :var9 => 'udf9',
-    #   :var10 => 'udf10'
-    # }
-
-    def initialize(order, account, options = {})
-      @options = options
-      self.pg = 'CC'
+    def initialize(key, salt, options = {})
+      @key, @salt, @options, @fields = key, salt, options, {}
     end
 
     def form_fields
+      @fields = @options.each do |k, v|
+        @fields[k.to_s] = v.to_s
+      end
       sanitize_fields
-      @fields.merge(mappings[:checksum] => generate_checksum)
+      @fields.merge(:hash => generate_checksum)
     end
 
     def generate_checksum
       checksum_payload_items = CHECKSUM_FIELDS.map { |field| @fields[field] }
-
-      PayuIndia.checksum(@fields["key"], PayuIndia.secret_key, checksum_payload_items )
+      PayuIndia.checksum(@key, @salt, checksum_payload_items )
     end
 
     def sanitize_fields
