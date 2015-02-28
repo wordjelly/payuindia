@@ -25,29 +25,26 @@ module PayuIndia
 
   class Helper
 
-    CHECKSUM_FIELDS = [ 'txnid', 'amount', 'productinfo', 'firstname', 'email', 'udf1', 'udf2', 'udf3', 'udf4',
-                        'udf5', 'udf6', 'udf7', 'udf8', 'udf9', 'udf10']
+    CHECKSUM_FIELDS = [ :txnid, :amount, :productinfo, :firstname, :email, :udf1, :udf2, :udf3, :udf4,
+                        :udf5, :udf6, :udf7, :udf8, :udf9, :udf10 ]
 
     def initialize(key, salt, options = {})
-      @key, @salt, @options, @fields = key, salt, options, {}
+      @key, @salt, @options = key, salt, options
     end
 
     def form_fields
-      @fields = @options.each do |k, v|
-        @fields[k.to_s] = v.to_s
-      end
       sanitize_fields
-      @fields.merge(:hash => generate_checksum)
+      @options.merge(:hash => generate_checksum)
     end
 
     def generate_checksum
-      checksum_payload_items = CHECKSUM_FIELDS.map { |field| @fields[field] }
+      checksum_payload_items = CHECKSUM_FIELDS.map { |field| @options[field] }
       PayuIndia.checksum(@key, @salt, checksum_payload_items )
     end
 
     def sanitize_fields
-      ['address1', 'address2', 'city', 'state', 'country', 'productinfo', 'email', 'phone'].each do |field|
-        @fields[field].gsub!(/[^a-zA-Z0-9\-_@\/\s.]/, '') if @fields[field]
+      [:address1, :address2, :city, :state, :country, :productinfo, :email, :phone].each do |field|
+        @options[field].gsub!(/[^a-zA-Z0-9\-_@\/\s.]/, '') if @options[field]
       end
     end
 
@@ -55,8 +52,8 @@ module PayuIndia
 
   class Notification
     def initialize(post, options = {})
-      @merchant_id = options[:merchant_id]
-      @secret_key = options[:secret_key]
+      @key = options[:key]
+      @salt = options[:salt]
       @params = options[:params]
     end
 
@@ -119,10 +116,6 @@ module PayuIndia
     # What currency have we been dealing with
     def currency
       'INR'
-    end
-
-    def item_id
-      params['txnid']
     end
 
     # This is the invoice which you passed to PayU.in
@@ -191,7 +184,7 @@ module PayuIndia
     end
 
     def message
-      @message || params['error']
+      @message || "#{params['error']} - #{params['error_Message']}"
     end
 
     def acknowledge(authcode = nil)
@@ -201,7 +194,7 @@ module PayuIndia
     def checksum_ok?
       checksum_fields = [transaction_status, *user_defined.reverse, customer_email, customer_first_name, product_info, gross, invoice]
 
-      unless Digest::SHA512.hexdigest([@secret_key, *checksum_fields, @merchant_id].join("|")) == checksum
+      unless Digest::SHA512.hexdigest([@salt, *checksum_fields, @key].join("|")) == checksum
         @message = 'Return checksum not matching the data provided'
         return false
       end
