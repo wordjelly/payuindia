@@ -7,12 +7,12 @@ module PayuIndia #:nodoc:
   module ActionViewHelper
     # This Helper creates form with all parameters added.
     #
-    #  <% payment_form_for_payu 'yourkey', 'yoursalt',
+    #  <% payment_form_for_payu 'YOUR_KEY', 'YOUR_SALT',
     #       :txnid => @cart.id,
     #       :amount => @cart.total_price,
     #       :productinfo => 'Book',
-    #       :firstname => 'Sandeep',
-    #       :email => 'sandeep.kumar@payu.in',
+    #       :firstname => 'abc',
+    #       :email => 'abc@example.com',
     #       :phone => '1234567890',
     #       :surl => 'http://localhost:3000/payu_callback',
     #       :furl => 'http://localhost:3000/payu_callback',
