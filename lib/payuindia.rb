@@ -1,5 +1,5 @@
-require "payu_india/version"
-require 'payu_india/action_view_helper'
+require "payuindia/version"
+require 'payuindia/action_view_helper'
 ActionView::Base.send(:include, PayuIndia::ActionViewHelper)
 
 module PayuIndia

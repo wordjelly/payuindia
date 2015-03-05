@@ -1,5 +1,5 @@
 require 'action_pack'
-require 'payu_india'
+require 'payuindia'
 
 module PayuIndia #:nodoc:
   ActionViewHelperError = Class.new(StandardError)
