@@ -25,6 +25,22 @@ module PayuIndia
     Digest::SHA512.hexdigest([merchant_id, *payload_items, secret_key].join("|"))
   end
 
+  class WebService
+
+      def initialize(key,salt,options = {})
+        @key, @salt, @options = key, salt, options  
+      end
+
+      CHECKSUM_FIELDS = [ :command, :var1 ]
+      
+      def generate_checksum
+        checksum_payload_items = CHECKSUM_FIELDS.map { |field| @options[field] }
+        PayuIndia.checksum(@key, @salt, checksum_payload_items )
+      end
+
+      
+  end
+
   class Helper
 
     CHECKSUM_FIELDS = [ :txnid, :amount, :productinfo, :firstname, :email, :udf1, :udf2, :udf3, :udf4,
