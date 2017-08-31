@@ -8,9 +8,16 @@ module PayuIndia
 
   self.test_url = 'https://test.payu.in/_payment.php'
   self.production_url = 'https://secure.payu.in/_payment.php'
+  self.webservice_test_url = 'https://test.payu.in/merchant/postservice.php?form=2'
+  self.webservice_production_url = 'https://info.payu.in/merchant/postservice.php?form=2'
+
 
   def self.service_url
     defined?(Rails) && Rails.env == 'production' ? self.production_url : self.test_url
+  end
+
+  def self.webservice_url
+    defined?(Rails) && Rails.env == 'production' ? self.webservice_production_url : self.webservice_test_url
   end
 
   def self.notification(post, options = {})
@@ -32,13 +39,13 @@ module PayuIndia
       end
 
       CHECKSUM_FIELDS = [ :command, :var1 ]
-      
+
       def generate_checksum
         checksum_payload_items = CHECKSUM_FIELDS.map { |field| @options[field] }
         PayuIndia.checksum(@key, @salt, checksum_payload_items )
       end
 
-      
+
   end
 
   class Helper
