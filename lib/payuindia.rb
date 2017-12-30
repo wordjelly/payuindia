@@ -5,6 +5,8 @@ ActionView::Base.send(:include, PayuIndia::ActionViewHelper)
 module PayuIndia
   mattr_accessor :test_url
   mattr_accessor :production_url
+  mattr_accessor :webservice_test_url
+  mattr_accessor :webservice_production_url
 
   self.test_url = 'https://test.payu.in/_payment.php'
   self.production_url = 'https://secure.payu.in/_payment.php'
@@ -29,7 +31,12 @@ module PayuIndia
   end
 
   def self.checksum(merchant_id, secret_key, payload_items )
-    Digest::SHA512.hexdigest([merchant_id, *payload_items, secret_key].join("|"))
+    puts "string for hash."
+    s = [merchant_id, *payload_items, secret_key].join("|")
+    puts s.to_s
+    puts "hash"
+    puts Digest::SHA512.hexdigest(s)
+    Digest::SHA512.hexdigest(s)
   end
 
   class WebService
@@ -42,6 +49,8 @@ module PayuIndia
 
       def generate_checksum
         checksum_payload_items = CHECKSUM_FIELDS.map { |field| @options[field] }
+        puts "checksm payload items are:"
+        puts checksum_payload_items.to_s
         PayuIndia.checksum(@key, @salt, checksum_payload_items )
       end
 
